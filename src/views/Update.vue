@@ -1,6 +1,5 @@
 <template>
     <div class="content">
-        <vGamePath v-if="showPathModal" @setPath="setPathAndUpdate"></vGamePath>
         <div class="update-log">
             <div>
                 <p v-for="(msg, index) in logs" :key="index">{{ msg }}</p>
@@ -13,14 +12,12 @@
 <script>
 import { ipcRenderer } from "electron";
 import vButton from "@/components/vButton.vue";
-import vGamePath from "@/components/vGamePath.vue";
 export default {
-    components: { vButton, vGamePath},
+    components: { vButton },
     data() {
         return {
             logs: [],
             success: false,
-            showPathModal: false
         };
     },
     beforeCreate() {
@@ -31,10 +28,6 @@ export default {
         ipcRenderer.once("update_done", (event, data) => {
             this.success = data;
         });
-
-        ipcRenderer.on("GAME_PATH_NOT_FOUND", () => {
-            this.showPathModal = true
-        })
     },
     created() {
         ipcRenderer.send("update_mod")
@@ -43,10 +36,6 @@ export default {
         ContinueLogin() {
             this.$router.replace({ path: "/login" });
         },
-        setPathAndUpdate(path) {
-            this.showPathModal = false
-            ipcRenderer.send("update_mod", path)
-        }
     },
 };
 </script>

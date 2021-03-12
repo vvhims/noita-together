@@ -6,13 +6,13 @@ function updateLog(data) {
     appEvent("update_log", data)
 }
 
-exports.updateMod = async (gamePath) => {
+exports.updateMod = async () => {
     delete require.cache[require.resolve('./updater')];
     const Updater = require('./updater');
 
     let error = false;
 
-    const updater = new Updater(branch, gamePath);
+    const updater = new Updater(branch);
     updater.on('gamepath_error', () => {
         appEvent("GAME_PATH_NOT_FOUND")
     })

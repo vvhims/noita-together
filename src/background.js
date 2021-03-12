@@ -1,7 +1,6 @@
 'use strict'
 const NT_SCHEME = "noitatogether"
 const path = require("path")
-const fs = require("fs")
 import { autoUpdater } from "electron-updater"
 import { app, protocol, BrowserWindow, dialog, ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
@@ -64,12 +63,8 @@ async function createWindow() {
     
 }
 
-ipcMain.on("update_mod", (event, gamePath) => {
-    if (gamePath) {
-        const userDataPath = path.join(app.getPath("userData"), "/gamePath.json")
-        fs.writeFileSync(userDataPath, JSON.stringify(gamePath))
-    }
-    updateMod(gamePath)
+ipcMain.on("update_mod", () => {
+    updateMod()
 })
 
 // Quit when all windows are closed.
