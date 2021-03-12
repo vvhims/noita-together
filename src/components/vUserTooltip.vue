@@ -1,19 +1,22 @@
 <template>
-    <div class="info-wrapper">
-        <!-- TODO show personal alert for user -->
-        <div ref="content">
+    <div class="tooltip-wrapper">
+        <slot name="content">
+            <!-- TODO show personal alert for user -->
+            <vTooltip v-if="isHost && host.ready && matches.length > 0">
+                <i class="fas fa-exclamation-triangle" slot="content"></i>
+                <div>
+                    <p v-for="entry in matches" :key="entry">{{ entry }}</p>
+                </div>
+            </vTooltip>
+
             <span :class="user.ready ? 'user-ready' : 'user-not-ready'">
-                <i v-if="isHost && host.ready && user.ready && matchHost.length > 0" class="fas fa-exclamation-triangle" slot="content"></i>
                 {{ user.ready ? "Ready" : "Not Ready" }}
             </span>
-        </div>
-        <div class="info" ref="info">
-            <div v-if="user.ready">
-                <template v-if="isHost && host.ready && matchHost.length > 0">
-                    <p v-for="entry in matchHost" :key="entry">{{ entry }}</p>
-                </template>
+        </slot>
+        <div class="tooltip" ref="tooltip">
+            <div v-if="isReady">
                 <p>Seed: {{ user.seed }}</p>
-                <p>Branch: {{ branch }}</p>
+                <p>Branch: {{branch}}</p>
                 <p>Mod version: {{ version }}</p>
                 <p>Mods:</p>
                 <p v-for="mod in user.mods" :key="mod">{{ mod }}</p>
@@ -27,7 +30,11 @@
 
 <script>
 import { createPopper } from "@popperjs/core";
+import vTooltip from "@/components/vTooltip.vue";
 export default {
+    components: {
+        vTooltip,
+    },
     props: {
         user: {
             type: Object,
@@ -40,16 +47,13 @@ export default {
             matches: {
                 version: {
                     hostMsg: "User is not on the same mod version.",
-                    userMsg: "You are not in the samge game branch as the host.",
+                    userMsg:
+                        "You are not in the samge game branch as the host.",
                 },
                 beta: {
                     hostMsg: "User is not in the same game branch.",
                     userMsg: "You are not in the same game branch as the host.",
                 },
-                seed: {
-                    hostMsg: "User is not in the same seed.",
-                    userMsg: "You are not in the same seed as the host."
-                }
             },
         };
     },
@@ -57,25 +61,16 @@ export default {
         isHost() {
             return this.$store.getters.isHost;
         },
-        seed() {
-            const flags = this.$store.getters.flags
-            let seed = 0
-            for (const flag of flags) {
-                if (flag.id == "sync_world_seed") { 
-                    seed = flag.value
-                }
-            }
-            return seed
+        isReady() {
+            return this.user.ready || false;
         },
         host() {
             const users = this.$store.state.room.users;
-            let host = {};
             for (const user of users) {
                 if (user.owner) {
-                    host = user;
+                    return user;
                 }
             }
-            return host;
         },
         mods() {
             let list = this.user.mods || [];
@@ -91,21 +86,19 @@ export default {
             const messages = [];
             const msg = this.isHost ? "hostMsg" : "userMsg";
             for (const key in this.matches) {
-                if (key == "seed") { continue }
-                if (this.user[key] != this.host[key]) {
+                if (this.user[key] != host[key]) {
                     messages.push(this.matches[key][msg]);
                 }
-            }
-            if (this.seed > 0 && this.host.seed != this.user.seed) {
-                messages.push(this.matches.seed[msg])
             }
             return messages;
         },
     },
     mounted() {
-        if (this.$refs.info) {
-            const content = this.$refs.content;
-            this.tooltip = createPopper(content, this.$refs.info, {
+        if (this.$refs.tooltip) {
+            const content = this.$slots.content && this.$slots.content[0];
+            const def = this.$refs.icon;
+            const elm = content && content.elm;
+            this.tooltip = createPopper(elm || def, this.$refs.tooltip, {
                 placement: "left",
                 modifiers: [{ name: "offset", options: { offset: [0, 15] } }],
             });
@@ -121,11 +114,11 @@ export default {
 </script>
 
 <style>
-.info-wrapper {
+.tooltip-wrapper {
     display: inline;
 }
 
-.info-wrapper .info {
+.tooltip-wrapper .tooltip {
     visibility: hidden;
     background-color: #0e0e0e;
     color: rgba(255, 255, 255, 0.8);
@@ -133,7 +126,7 @@ export default {
     border-radius: 3px;
 }
 
-.info-wrapper:hover .info {
+.tooltip-wrapper:hover .tooltip {
     visibility: visible;
     opacity: 1;
 }
