@@ -182,11 +182,6 @@ module.exports = (data) => {
         sendMsg(msg)
     })
 
-    noita.on("RespawnPenalty", (event) => {
-        const msg = messageHandler.encodeGameMsg("cRespawnPenalty", event)
-        sendMsg(msg)
-    })
-
     noita.on("SendItems", (event) => {
         const payload = {}
         if (event.spells) {
