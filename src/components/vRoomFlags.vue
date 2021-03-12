@@ -37,9 +37,8 @@
 
             <h2>World seed <vTooltip><span>{{ payload.world.sync_world_seed.tooltip }}</span></vTooltip>
             </h2>
-            <div class="world-seed">
-                <vInput v-model="payload.world.sync_world_seed.value" ref="seedInput"></vInput>
-                <vButton @click="randomizeSeed">Random</vButton>
+            <div>
+                <vInput v-model="payload.world.sync_world_seed.value"></vInput>
             </div>
         </template>
         <div slot="footer" class="centered">
@@ -142,12 +141,6 @@ export default {//braincells where'd ya go
             //console.log({ flags: payload })
             this.$emit("applyFlags", { flags: payload });
         },
-        randomizeSeed() {
-            const seed = Math.floor(Math.random() * 4294967295) + 1
-            // not an amazing way to do it
-            this.$refs.seedInput.$refs.input.value = seed
-            this.$refs.seedInput.$refs.input.dispatchEvent(new Event('input'))
-        },
         close() {
             this.$emit("close");
         },
@@ -170,16 +163,5 @@ export default {//braincells where'd ya go
 .switches > div {
     padding: 0.2em;
     min-width: 180px;
-}
-
-.world-seed {
-    display: flex;
-    width: 100%;
-}
-
-.world-seed .labeled-input{
-    margin-top: auto;
-    padding-bottom: 0;
-    margin-right: 0;
 }
 </style>
