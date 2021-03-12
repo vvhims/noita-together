@@ -310,21 +310,20 @@ class NoitaGame extends EventEmitter {
     sPlayerPickup(payload) {
         console.log("[PICKUP]")
         console.log({ payload })
-        const player = payload.userId == this.user.userId ? this.user : this.players[payload.userId]
+        if (payload.userId == this.user.userId) { return }
+        this.sendEvt("PlayerPickup", payload)
+        const player = this.players[payload.userId]
         if (player) {
             sysMsg(`${player.name} picked up a ${typeof payload.heart != "undefined" ? "heart" : "orb"}.`)
         }
-        if (payload.userId == this.user.userId) { return }
-        this.sendEvt("PlayerPickup", payload)
     }
     sPlayerDeath(payload) {
-        const player = payload.userId == this.user.userId ? this.user : this.players[payload.userId]
+        if (payload.userId == this.user.userId) { return }
+        this.sendEvt("PlayerDeath", payload)
+        const player = this.players[payload.userId]
         if (player) {
             sysMsg(`${player.name} has died.`)
         }
-        if (payload.userId == this.user.userId) { return }
-        this.sendEvt("PlayerDeath", payload)
-        
     }
     //sPlayerNewGamePlus (payload) => {},
     sPlayerSecretHourglass(payload) {
@@ -340,22 +339,20 @@ class NoitaGame extends EventEmitter {
         }
     }
     sRespawnPenalty(payload) {
-        const player = payload.userId == this.user.userId ? this.user : this.players[payload.userId]
+        if (payload.userId == this.user.userId) { return }
+        this.sendEvt("RespawnPenalty", payload)
+        const player = this.players[payload.userId]
         if (player) {
             sysMsg(`${player.name} had to respawn against his will.`)
         }
-        if (payload.userId == this.user.userId) { return }
-        this.sendEvt("RespawnPenalty", payload)
-        
     }
     sAngerySteve(payload) {
-        const player = payload.userId == this.user.userId ? this.user : this.players[payload.userId]
+        if (payload.userId == this.user.userId) { return }
+        this.sendEvt("AngerySteve", payload)
+        const player = this.players[payload.userId]
         if (player) {
             sysMsg(`${player.name} has angered the gods.`)
         }
-        if (payload.userId == this.user.userId) { return }
-        this.sendEvt("AngerySteve", payload)
-        
     }
     /*
     sNemesisPickupItem (payload) => {},
