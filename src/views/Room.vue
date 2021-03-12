@@ -88,7 +88,6 @@
 </template>
 
 <script>
-import { ipcRenderer } from "electron";
 import vButton from "@/components/vButton.vue";
 import vRoomFlags from "@/components/vRoomFlags.vue";
 //import vTooltip from "@/components/vTooltip.vue"
@@ -117,9 +116,6 @@ export default {
                 this.$store.dispatch("sendFlags");
             }
         });
-    },
-    created() {
-        ipcRenderer.send("game_listen")
     },
     watch: {
         chat() {
