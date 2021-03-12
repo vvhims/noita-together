@@ -14,8 +14,6 @@
         <div class="lobby-header">
             <h1>Rooms</h1>
             <div class="lobby-controls">
-                <vInput v-model="roomFilter" label="filter" />
-                <div>
                 <vButton @click="openRoomCreation">
                     <template slot="icon">
                         <i class="fas fa-plus-square"></i>
@@ -32,7 +30,6 @@
                     </template>
                     Refresh
                 </vButton>
-                </div>
             </div>
         </div>
 
@@ -52,7 +49,7 @@
                     </tr>
                     <tr
                         v-else
-                        v-for="room in filteredRooms"
+                        v-for="room in rooms"
                         :key="room.id"
                         @dblclick="joinRoom(room.id, room.protected)"
                     >
@@ -73,7 +70,6 @@
 
 <script>
 import vButton from "../components/vButton.vue";
-import vInput from "@/components/vInput.vue";
 import vRoomCreation from "../components/vRoomCreation.vue";
 import vRoomPassword from "../components/vRoomPassword.vue";
 export default {
@@ -81,7 +77,6 @@ export default {
         vButton,
         vRoomCreation,
         vRoomPassword,
-        vInput
     },
     data() {
         return {
@@ -89,7 +84,6 @@ export default {
             showRoomCreation: false,
             refreshing: false,
             clickedRoom: "",
-            roomFilter: ""
         };
     },
     beforeCreate() {
@@ -109,15 +103,6 @@ export default {
         rooms() {
             return this.$store.state.lobbies;
         },
-        filteredRooms() {
-            const filterKey = this.roomFilter && this.roomFilter.toLowerCase()
-            let data = this.rooms
-            data = data.filter(room => {
-                return room.name.toLowerCase().includes(filterKey) || room.owner.toLowerCase().includes(filterKey)
-            })
-
-            return data
-        }
     },
     methods: {
         openRoomCreation() {
@@ -178,16 +163,7 @@ export default {
 }
 
 .lobby-controls {
-    display: flex;
-    flex-flow:  row wrap;
     margin-left: auto;
-}
-
-.lobby-controls .labeled-input{
-    min-width: 20%;
-    margin-top: auto;
-    padding-bottom: 0;
-    margin-right: 0;
 }
 
 .lobbies-wrapper {
